@@ -2,6 +2,7 @@ package com.hcl.springboot.controller;
 
 import com.hcl.springboot.payload.CommentDto;
 import com.hcl.springboot.service.CommentService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,15 +26,30 @@ public class CommentController {
     }
 
     @GetMapping("/posts/{postId}/comments")
-    public List<CommentDto> getCommentsByPostId(@PathVariable(name = "postId") long postId){
+    public List<CommentDto> getCommentsByPostId(@PathVariable(name = "postId") long postId) {
         return commentService.getCommentsByPostId(postId);
     }
 
     @GetMapping("/posts/{postId}/comments/{id}")
-     public ResponseEntity<CommentDto> getCommentById(@PathVariable(value = "postId") Long postId,
-                                                      @PathVariable(value = "id") Long commentId){
-        CommentDto commentDto= commentService.getCommentById(postId, commentId);
+    public ResponseEntity<CommentDto> getCommentById(@PathVariable(value = "postId") Long postId,
+                                                     @PathVariable(value = "id") Long commentId) {
+        CommentDto commentDto = commentService.getCommentById(postId, commentId);
         return new ResponseEntity<>(commentDto, HttpStatus.OK);
-     }
+    }
+
+    @PutMapping("/posts/{postId}/comments/{id}")
+    public ResponseEntity<CommentDto> updateComment(@PathVariable(value = "postId") Long postId,
+                                                    @PathVariable(value = "id") Long commentId,
+                                                    @Valid @RequestBody CommentDto commentDto) {
+        CommentDto updateComment = commentService.updateComment(postId, commentId, commentDto);
+        return new ResponseEntity<>(updateComment, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/posts/{postId}/comments/{id}")
+    public ResponseEntity<String> deleteComment(@PathVariable(value = "postId") Long postId,
+                                                @PathVariable(value = "id") Long commentId) {
+        commentService.deleteComment(postId, commentId);
+        return new ResponseEntity<>("Comment delete successfully", HttpStatus.OK);
+    }
 
 }
